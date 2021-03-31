@@ -1,24 +1,17 @@
 #include <string>
-#include <map>
+#include <vector>
 
 enum class TokenName {
-	keyword,	// 'let', 'in'
+	// keyword,	// 'let', 'in'
+	// unaryop,	// ~
+	// separator, // '(', ')'
+	// identifier
 	literal,	// integers, 'True', 'False'
-	separator,	// '(', ')'
-	identifier  // everything else
+	binaryop,	// +, -, *, /, &, |
+	end			// signal end of program 
 };
 
-TokenName findTokenName(std::string raw_token) {
-	switch (string) {
-		case "let", 
-	}
-}
-
-std::map<std::string, TokenName> TokenDict {
-	{"let", TokenName::keyword},
-	{"in", TokenName::keyword},
-	{ "", TokenName::keyword },
-};
+std::vector<char> binary_ops = { '+', '-', '*', '/', '&', '|' };
 
 class Token {
 	private :
