@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "scanner.h"
+#include "token.h"
 
 using namespace std;
 
