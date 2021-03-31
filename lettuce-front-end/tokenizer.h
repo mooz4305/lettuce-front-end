@@ -12,15 +12,17 @@ class Tokenizer {
 		string program;
 		Scanner scanner;
 		vector<string> tokens;
+
+		TokenName findTokenName(std::string raw_token);
 	public:
 		Tokenizer();
 
 		vector<string> getTokens() {
 			return tokens;
 		}
-
+		
 		Tokenizer(string filename) : program(filename), scanner(filename, this) {};
-
+		
 		void tokenize() {
 			scanner.scan();
 		}
