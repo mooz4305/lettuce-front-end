@@ -140,9 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lfe.cpp" />
-    <ClCompile Include="scanner.cpp" />
-    <ClCompile Include="token.cpp" />
     <ClCompile Include="tokenizer.cpp" />
+    <ClCompile Include="token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
@@ -151,7 +150,6 @@
     <ClInclude Include="parser.h" />
     <ClInclude Include="token.h" />
     <ClInclude Include="tokenizer.h" />
-    <ClInclude Include="scanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

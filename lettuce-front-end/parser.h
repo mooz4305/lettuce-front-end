@@ -2,6 +2,8 @@
 #include <string>
 #include <memory>  // needed for unique pointer
 
+#include "tokenizer.h"
+
 using namespace std;
 
 class Expr {

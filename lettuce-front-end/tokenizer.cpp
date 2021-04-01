@@ -1,45 +1,53 @@
 #include "tokenizer.h"
 
-Tokenizer::Tokenizer() {
-	program = "";
-	scanner = Scanner();
-}
+Token Tokenizer::get_token() {
+	Token t;
 
-bool isInteger(std::string s);
-bool isBinaryOp(std::string s);
-
-TokenName Tokenizer::findTokenName(std::string raw_token) {
-	if (isInteger(raw_token)) {
-		return TokenName::literal;
-	}
-	else if (raw_token == "True" || raw_token == "False") {
-		return TokenName::literal;
-	}
-	else if (isBinaryOp(raw_token)) {
-		return TokenName::binaryop;
+	if (!tokens.empty()) {
+		string raw_token = tokens.front();
+		tokens.pop_front();
+		t = Token(raw_token);
 	}
 	else {
-		return TokenName::end;
+		t = Token(TokenName::end, "");
 	}
+
+	return t;
 }
 
-bool isInteger(std::string s) {
-	for (auto c : s) {
-		if (!isdigit(c)) return false;
-	}
-	return true;
+void Tokenizer::save_token(string raw_token) {
+	tokens.push_back(raw_token);
 }
 
-bool isBinaryOp(std::string s) {
-	if (s.size() == 1) {
-		char c = s[0];
-		int size = binary_ops.size();
+void Tokenizer::tokenize()
+{
+	char c;
+	string raw_token = "";
+	while (ifs.get(c)) {
+		raw_token = Tokenizer::read_character(c, raw_token);
+	}
+	Tokenizer::read_character(' ', raw_token);
+}
 
-		int pos = std::find(0, size, c);
-		if (pos != size) {
-			return true;
+string Tokenizer::read_character(char c, const string raw_token) {
+	if (isspace(c)) {	// whitespace separates tokens, thrown away
+		if (raw_token != "") {
+			Tokenizer::save_token(raw_token);
 		}
+		return "";
 	}
+	else if (c == '(' || c == ')' || isBinaryOp(string(1,c))) { // parentheses seperate tokens, but are also tokens
+		if (raw_token != "") {
+			Tokenizer::save_token(raw_token);
+		}
 
-	return false;
+		string s(1, c);
+		Tokenizer::save_token(s);
+
+		return "";
+	}
+	else {
+		string updated_token = raw_token + c;
+		return updated_token;
+	}
 }

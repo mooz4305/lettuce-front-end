@@ -9,14 +9,20 @@
 int main()
 {
     string test_program = "test.txt";
-    Tokenizer tz = Tokenizer(test_program);
+    ifstream ifs;
+
+    ifs.open(test_program, ios_base::in);
+    Tokenizer tz(ifs);
 
     tz.tokenize();
-    vector<string> tokens = tz.getTokens();
 
-    for (auto item : tokens) {
-        cout << item << endl;
-    }
+    Token t;
+    do {
+        t = tz.get_token();
+        if (t.get_token_name() == TokenName::binaryop) {
+            cout << t.get_token_text() << endl;
+        }
+    } while (t.get_token_text() != "");
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

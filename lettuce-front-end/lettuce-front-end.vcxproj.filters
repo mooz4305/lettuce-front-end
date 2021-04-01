@@ -18,9 +18,6 @@
     <ClCompile Include="lfe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scanner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,9 +31,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="scanner.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="tokenizer.h">
       <Filter>Source Files</Filter>
     </ClInclude>

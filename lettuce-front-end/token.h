@@ -1,3 +1,6 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <string>
 #include <vector>
 
@@ -11,15 +14,23 @@ enum class TokenName {
 	end			// signal end of program 
 };
 
-std::vector<char> binary_ops = { '+', '-', '*', '/', '&', '|' };
+bool isInteger(std::string s);
+bool isBinaryOp(std::string s);
+
 
 class Token {
-	private :
-		TokenName name;
-		std::string text;
-	public :
-		Token(TokenName, std::string);
-		void setTokenName(TokenName name);
-		TokenName getTokenName();
-		std::string getTokenText();
+private:
+	TokenName name;
+	std::string text;
+
+	TokenName find_token_name(std::string raw_token);
+public:
+	Token() : name(TokenName::literal), text("") {};
+	Token(std::string);
+	Token(TokenName, std::string);
+	
+	TokenName get_token_name();
+	std::string get_token_text();
 };
+
+#endif

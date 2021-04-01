@@ -1,57 +1,25 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <vector>
+#include <deque>
 
-#include "scanner.h"
 #include "token.h"
 
 using namespace std;
 
+class Token;
+
 class Tokenizer {
 	private:
-		string program;
-		Scanner scanner;
-		vector<string> tokens;
+		ifstream& ifs;
+		deque<string> tokens;
 
-		TokenName findTokenName(std::string raw_token);
+		void save_token(string);
+		string read_character(char, string);
 	public:
-		Tokenizer();
+		void tokenize();
+		Token get_token();
 
-		vector<string> getTokens() {
-			return tokens;
-		}
-		
-		Tokenizer(string filename) : program(filename), scanner(filename, this) {};
-		
-		void tokenize() {
-			scanner.scan();
-		}
-
-		string process_character(char c, const string raw_token) {
-			if (isspace(c)) {	// whitespace separates tokens, thrown away
-				if (raw_token != "") {
-					process_token(raw_token);
-				}
-				return "";
-			}
-			else if (c == '(' || c == ')') { // parentheses seperate tokens, but are also tokens
-				if (raw_token != "") {
-					process_token(raw_token);
-				}
-
-				string s(1, c);
-				process_token(s);
-
-				return "";
-			}
-			else {
-				string updated_token = raw_token + c;
-				return updated_token;
-			}
-		}
-
-		void process_token(string raw_token) {
-			tokens.push_back(raw_token);
-		}
+		Tokenizer(ifstream& ifs) : ifs(ifs) {};
+		~Tokenizer() {};
 };
