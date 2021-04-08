@@ -7,7 +7,7 @@
 enum class TokenName {
 	// keyword,	// 'let', 'in'
 	// unaryop,	// ~
-	// separator, // '(', ')'
+	separator, // '(', ')'
 	// identifier
 	literal,	// integers, 'True', 'False'
 	binaryop,	// +, -, *, /, &, |

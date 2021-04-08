@@ -52,6 +52,9 @@ TokenName Token::find_token_name(std::string raw_token) {
 	else if (isBinaryOp(raw_token)) {
 		return TokenName::binaryop;
 	}
+	else if (raw_token == "(" || raw_token == ")") {
+		return TokenName::separator;
+	}
 	else {
 		return TokenName::end;
 	}
