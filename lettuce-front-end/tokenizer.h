@@ -17,8 +17,10 @@ class Tokenizer {
 		void save_token(string);
 		string read_character(char, string);
 	public:
-		void tokenize();
 		Token get_token();
+		void consume_token();
+
+		void tokenize();
 
 		Tokenizer(ifstream& ifs) : ifs(ifs) {};
 		~Tokenizer() {};

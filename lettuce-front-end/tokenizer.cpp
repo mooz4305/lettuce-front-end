@@ -5,7 +5,6 @@ Token Tokenizer::get_token() {
 
 	if (!tokens.empty()) {
 		string raw_token = tokens.front();
-		tokens.pop_front();
 		t = Token(raw_token);
 	}
 	else {
@@ -13,6 +12,12 @@ Token Tokenizer::get_token() {
 	}
 
 	return t;
+}
+
+void Tokenizer::consume_token() {
+	if (!tokens.empty()) {
+		tokens.pop_front();
+	}
 }
 
 void Tokenizer::save_token(string raw_token) {
@@ -32,17 +37,17 @@ void Tokenizer::tokenize()
 string Tokenizer::read_character(char c, const string raw_token) {
 	if (isspace(c)) {	// whitespace separates tokens, thrown away
 		if (raw_token != "") {
-			Tokenizer::save_token(raw_token);
+			save_token(raw_token);
 		}
 		return "";
 	}
 	else if (c == '(' || c == ')' || isBinaryOp(string(1,c))) { // parentheses seperate tokens, but are also tokens
 		if (raw_token != "") {
-			Tokenizer::save_token(raw_token);
+			save_token(raw_token);
 		}
 
 		string s(1, c);
-		Tokenizer::save_token(s);
+		save_token(s);
 
 		return "";
 	}
