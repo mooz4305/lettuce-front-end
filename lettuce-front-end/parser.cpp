@@ -18,6 +18,10 @@ unique_ptr<Expr> Parser::parse_literal(Token token) {
 	return expr;
 }
 
+/*unique_ptr<Expr> Parser::parse_parens() {
+	unique_ptr center_expr = parse_expr();
+}*/
+
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
 unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedence) {
 	Token lookahead = tkz.get_token();
@@ -53,9 +57,7 @@ unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedenc
 
 unique_ptr<Expr> Parser::parse() {
 	tkz.tokenize();
-
-	unique_ptr<Expr> p;
-	return parse_expr(move(p));
+	return parse_expr();
 }
 
 unique_ptr<Expr> Parser::parse_expr(unique_ptr<Expr> prev_expr) {
@@ -69,6 +71,12 @@ unique_ptr<Expr> Parser::parse_expr(unique_ptr<Expr> prev_expr) {
 	else if (name == TokenName::binaryop) {
 		return parse_binary_op(move(prev_expr), 0);
 	}
+}
+
+// 2nd version of parse_expr()
+unique_ptr<Expr> Parser::parse_expr() {
+	unique_ptr<Expr> p;
+	return parse_expr(move(p));
 }
 
 unique_ptr<Expr> Parser::parse_primary() {
