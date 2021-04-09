@@ -1,34 +1,44 @@
 #include "parser.h"
 
+void log_error(string message) {
+	cout << "ParseError: " << message << endl;
+	exit(EXIT_FAILURE);
+}
+
 unique_ptr<Expr> Parser::parse_literal(Token token) {
 	string text = token.get_token_text();
 	tkz.consume_token();
 
 	unique_ptr<Expr> expr;
-	if (text[0] == 'T') {
+	if (text[0] == 'T')
 		expr = unique_ptr<Expr>(new BoolExpr(true));
-	}
-	else if (text[0] == 'F') {
+	else if (text[0] == 'F')
 		expr = unique_ptr<Expr>(new BoolExpr(true));
-	}
-	else {
-		expr = unique_ptr<Expr>(new ConstExpr(stoi(token.get_token_text())));
-	}
+	else
+		expr = unique_ptr<Expr>(new ConstExpr(stoi(text)));
 
 	return expr;
 }
 
 unique_ptr<Expr> Parser::parse_parens() {
+	// consume the '(' token
 	tkz.consume_token();
 	
 	unique_ptr<Expr> center_expr = parse_expr();
+	if (!center_expr) {
+		log_error("Parentheses must enclose an expression.");
+	}
+
 	Token lookahead = tkz.get_token();
 	if (lookahead.get_token_text() == ")") {
+		// consume the ')' token
 		tkz.consume_token();
 		unique_ptr<Expr> result(new ParensExpr(move(center_expr)));
 		return result;
 	}
-	// TO DO: What if there is no closing parentheses?
+	else {
+		log_error("Missing closing parentheses.");
+	}
 }
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
@@ -83,7 +93,8 @@ unique_ptr<Expr> Parser::parse_expr(unique_ptr<Expr> prev_expr) {
 				return parse_parens();
 			else
 				return prev_expr;
-
+		case TokenName::end :
+			return prev_expr;
 	}
 }
 
