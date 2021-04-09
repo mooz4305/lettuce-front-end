@@ -18,9 +18,18 @@ unique_ptr<Expr> Parser::parse_literal(Token token) {
 	return expr;
 }
 
-/*unique_ptr<Expr> Parser::parse_parens() {
-	unique_ptr center_expr = parse_expr();
-}*/
+unique_ptr<Expr> Parser::parse_parens() {
+	tkz.consume_token();
+	
+	unique_ptr<Expr> center_expr = parse_expr();
+	Token lookahead = tkz.get_token();
+	if (lookahead.get_token_text() == ")") {
+		tkz.consume_token();
+		unique_ptr<Expr> result(new ParensExpr(move(center_expr)));
+		return result;
+	}
+	// TO DO: What if there is no closing parentheses?
+}
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
 unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedence) {
@@ -64,12 +73,17 @@ unique_ptr<Expr> Parser::parse_expr(unique_ptr<Expr> prev_expr) {
 	Token token = tkz.get_token();
 	TokenName name = token.get_token_name();
 
-	if (name == TokenName::literal) {
-		unique_ptr<Expr> literal_expr = parse_literal(token);
-		return parse_expr(move(literal_expr));
-	}
-	else if (name == TokenName::binaryop) {
-		return parse_binary_op(move(prev_expr), 0);
+	switch (name) {
+		case TokenName::literal: 
+			return parse_expr(parse_literal(token));
+		case TokenName::binaryop :
+			return parse_binary_op(move(prev_expr), 0);
+		case TokenName::separator :
+			if (token.get_token_text() == "(")
+				return parse_parens();
+			else
+				return prev_expr;
+
 	}
 }
 
@@ -85,7 +99,12 @@ unique_ptr<Expr> Parser::parse_primary() {
 
 	if (name == TokenName::literal) {
 		return parse_literal(token);
-	} else {
+	}
+	else if (name == TokenName::separator) {
+		if (token.get_token_text() == "(")
+			return parse_parens();
+	} 
+	else {
 		unique_ptr<Expr> p;
 		return p;
 	}

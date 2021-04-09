@@ -41,6 +41,10 @@ class ParensExpr : public Expr {
 		unique_ptr<Expr> center_expr;
 	public :
 		ParensExpr(unique_ptr<Expr> center_expr) : center_expr(move(center_expr)) {}
+
+		string print() {
+			return "Parens(" + center_expr->print() +  ")";
+		};
 };
 
 class BinaryOpExpr : public Expr {
