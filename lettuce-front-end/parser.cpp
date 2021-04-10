@@ -5,40 +5,29 @@ void log_error(string message) {
 	exit(EXIT_FAILURE);
 }
 
-unique_ptr<Expr> Parser::parse_literal(Token token) {
-	string text = token.get_token_text();
-	tkz.consume_token();
+unique_ptr<Expr> Parser::parse_literal(string text) {
+	tkz.consume_token(); // consume the literal token
 
-	unique_ptr<Expr> expr;
-	if (text[0] == 'T')
-		expr = unique_ptr<Expr>(new BoolExpr(true));
-	else if (text[0] == 'F')
-		expr = unique_ptr<Expr>(new BoolExpr(true));
-	else
-		expr = unique_ptr<Expr>(new ConstExpr(stoi(text)));
-
-	return expr;
+	if (text[0] == 'T')			return unique_ptr<Expr>(new BoolExpr(true));
+	else if (text[0] == 'F')	return unique_ptr<Expr>(new BoolExpr(false));
+	else						return unique_ptr<Expr>(new ConstExpr(stoi(text)));
 }
 
 unique_ptr<Expr> Parser::parse_parens() {
-	// consume the '(' token
-	tkz.consume_token();
-	
+	tkz.consume_token(); // consume the '(' token
+
 	unique_ptr<Expr> center_expr = parse_expr();
-	if (!center_expr) {
-		log_error("Parentheses must enclose an expression.");
-	}
+	if (!center_expr) log_error("Parentheses must enclose an expression.");
 
 	Token lookahead = tkz.get_token();
 	if (lookahead.get_token_text() == ")") {
-		// consume the ')' token
-		tkz.consume_token();
+		tkz.consume_token(); // consume the ')' token
+
 		unique_ptr<Expr> result(new ParensExpr(move(center_expr)));
 		return result;
 	}
-	else {
-		log_error("Missing closing parentheses.");
-	}
+	else log_error("Missing a closing parentheses.");
+
 }
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
@@ -76,47 +65,40 @@ unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedenc
 
 unique_ptr<Expr> Parser::parse() {
 	tkz.tokenize();
-	return parse_expr();
+
+	unique_ptr<Expr> expression = parse_expr(); // assuming program is a single expression
+
+	return expression;
 }
 
-unique_ptr<Expr> Parser::parse_expr(unique_ptr<Expr> prev_expr) {
+unique_ptr<Expr> Parser::parse_expr() {
+	unique_ptr<Expr> expr;
+
 	Token token = tkz.get_token();
 	TokenName name = token.get_token_name();
-
-	switch (name) {
-		case TokenName::literal: 
-			return parse_expr(parse_literal(token));
-		case TokenName::binaryop :
-			return parse_binary_op(move(prev_expr), 0);
-		case TokenName::separator :
-			if (token.get_token_text() == "(")
-				return parse_parens();
-			else
-				return prev_expr;
-		case TokenName::end :
-			return prev_expr;
+	if (name != TokenName::end) {
+			expr = parse_primary();
+			if (tkz.get_token().get_token_name() == TokenName::binaryop) {
+				expr = parse_binary_op(move(expr), 0);
+			}
 	}
+	return expr;
 }
 
-// 2nd version of parse_expr()
-unique_ptr<Expr> Parser::parse_expr() {
-	unique_ptr<Expr> p;
-	return parse_expr(move(p));
-}
-
+// parses expressions that are not BinOp expressions
 unique_ptr<Expr> Parser::parse_primary() {
 	Token token = tkz.get_token();
 	TokenName name = token.get_token_name();
+	string text = token.get_token_text();
 
-	if (name == TokenName::literal) {
-		return parse_literal(token);
-	}
-	else if (name == TokenName::separator) {
-		if (token.get_token_text() == "(")
-			return parse_parens();
-	} 
-	else {
-		unique_ptr<Expr> p;
-		return p;
+	switch (name) {
+		case TokenName::literal:
+			return parse_literal(text);
+		case TokenName::separator:
+			if (text == "(")
+				return parse_parens();
+			else log_error("Missing an opening parentheses.");
+		default:
+			log_error("The token '" + text + "' could not be parsed.");
 	}
 }
