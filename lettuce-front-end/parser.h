@@ -60,6 +60,27 @@ class BinaryOpExpr : public Expr {
 		};
 };
 
+class IdentExpr : public Expr {
+	private :
+		string name;
+	public :
+		IdentExpr(string name) : name(name) {}
+
+		string print() { return "Ident(" + name + ")"; }
+};
+
+class LetExpr : public Expr {
+	private :
+		unique_ptr<Expr> ident_expr, value_expr, body_expr;
+	public :
+		LetExpr(unique_ptr<Expr> ident_expr, unique_ptr<Expr> value_expr, unique_ptr<Expr> body_expr) :
+			ident_expr(move(ident_expr)), value_expr(move(value_expr)), body_expr(move(body_expr)) {}
+
+		string print() { 
+			return "Let(" + ident_expr->print() + "," + value_expr->print() + "," + body_expr->print() + ")"; 
+		}
+};
+
 class Parser {
 	private :
 		Tokenizer tkz;
