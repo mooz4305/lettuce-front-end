@@ -56,6 +56,6 @@ TokenName Token::find_token_name(std::string raw_token) {
 		return TokenName::separator;
 	}
 	else {
-		return TokenName::end;
+		return TokenName::identifier;
 	}
 }

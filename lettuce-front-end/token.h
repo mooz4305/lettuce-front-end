@@ -8,7 +8,7 @@ enum class TokenName {
 	// keyword,	// 'let', 'in'
 	// unaryop,	// ~
 	separator, // '(', ')'
-	// identifier
+	identifier,
 	literal,	// integers, 'True', 'False'
 	binaryop,	// +, -, *, /, &, |
 	end			// signal end of program 

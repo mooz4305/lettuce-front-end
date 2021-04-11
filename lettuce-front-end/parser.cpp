@@ -13,6 +13,12 @@ unique_ptr<Expr> Parser::parse_literal(string text) {
 	else						return unique_ptr<Expr>(new ConstExpr(stoi(text)));
 }
 
+unique_ptr<Expr> Parser::parse_identifier(string text) {
+	tkz.consume_token();
+	return unique_ptr<Expr>(new IdentExpr(text));
+}
+
+
 unique_ptr<Expr> Parser::parse_parens() {
 	tkz.consume_token(); // consume the '(' token
 
@@ -98,6 +104,8 @@ unique_ptr<Expr> Parser::parse_primary() {
 			if (text == "(")
 				return parse_parens();
 			else log_error("Missing an opening parentheses.");
+		case TokenName::identifier:
+			return parse_identifier(text);
 		default:
 			log_error("The token '" + text + "' could not be parsed.");
 	}

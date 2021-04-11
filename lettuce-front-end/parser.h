@@ -88,9 +88,11 @@ class Parser {
 		
 	public :
 		unique_ptr<Expr> parse_literal(string);
+		unique_ptr<Expr> parse_identifier(string);
 		unique_ptr<Expr> parse_parens();
 		unique_ptr<Expr> parse_primary();
 		unique_ptr<Expr> parse_binary_op(unique_ptr<Expr>, int);
+		
 
 		unique_ptr<Expr> parse_expr();
 
