@@ -87,3 +87,11 @@ public:
 		return "ITE(" + conditional_expr->print() + "," + body_expr1->print() + "," + body_expr2->print() + ")";
 	}
 };
+
+class FunDefExpr : Expr {
+private:
+	unique_ptr<Expr> ident_expr, body_expr;
+public:
+	FunDefExpr(unique_ptr<Expr> ident_expr, unique_ptr<Expr> body_expr) :
+		ident_expr(move(ident_expr)), body_expr(move(body_expr)) {}
+};
