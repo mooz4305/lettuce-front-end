@@ -44,6 +44,12 @@ unique_ptr<Expr> Parser::parse_keyword() {
 	}
 	else if (token_text == "be" || token_text == "in") {
 		log_error("Let expression could not be parsed.");
+	} 
+	else if (token_text == "if") {
+		return parse_if();
+	}
+	else if (token_text == "then" || token_text == "else") {
+		log_error("If-then-else expression could not be parsed.");
 	}
 	else {
 		log_error("Unimplemented keyword token.");
@@ -74,10 +80,38 @@ unique_ptr<Expr> Parser::parse_let() {
 	tkz.consume_token(); // consume the 'in' keyword
 
 	unique_ptr<Expr> body_expr = parse_expr();
+	if (!body_expr) {
+		log_error("Body must have an expression.");
+	}
 
 	return unique_ptr<Expr>(new LetExpr(move(ident_expr), move(value_expr), move(body_expr)) );
 }
 
+unique_ptr<Expr> Parser::parse_if() {
+	tkz.consume_token(); // consume the 'if' keyword
+
+	unique_ptr<Expr> conditional_expr = parse_expr();
+
+	Token token = tkz.get_token();
+	if (token.get_token_text() != "then") {
+		log_error("Conditional must be followed by 'then' keyword.");
+	}
+	tkz.consume_token(); // consume the 'then' keyword
+
+	unique_ptr<Expr> then_expr = parse_expr();
+	if (!then_expr) log_error("A body expression must follow 'then' keyword.");
+
+	token = tkz.get_token();
+	if (token.get_token_text() != "else") {
+		log_error("Missing 'else' keyword.");
+	}
+	tkz.consume_token(); // consume the 'else' keyword
+
+	unique_ptr<Expr> else_expr = parse_expr();
+	if (!else_expr) log_error("A body expression must follow 'else' keyword.");
+
+	return unique_ptr<Expr>(new ITEExpr(move(conditional_expr), move(then_expr), move(else_expr)));
+}
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
 unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedence) {
