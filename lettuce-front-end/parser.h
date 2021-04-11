@@ -82,6 +82,19 @@ class LetExpr : public Expr {
 		}
 };
 
+// ITE == If Then Else
+class ITEExpr : public Expr {
+private:
+	unique_ptr<Expr> conditional_expr, body_expr1, body_expr2;
+public:
+	ITEExpr(unique_ptr<Expr> expr1, unique_ptr<Expr> expr2, unique_ptr<Expr> expr3) :
+		conditional_expr(move(expr1)), body_expr1(move(expr2)), body_expr2(move(expr3)) {}
+
+	string print() {
+		return "ITE(" + conditional_expr->print() + "," + body_expr1->print() + "," + body_expr2->print() + ")";
+	}
+};
+
 class Parser {
 	private :
 		Tokenizer tkz;
@@ -92,7 +105,7 @@ class Parser {
 		unique_ptr<Expr> parse_identifier(string);
 		unique_ptr<Expr> parse_keyword();
 		unique_ptr<Expr> parse_let();
-
+		unique_ptr<Expr> parse_if();
 
 		unique_ptr<Expr> parse_parens();
 		unique_ptr<Expr> parse_primary();

@@ -1,7 +1,7 @@
 #include "token.h"
 
 const std::vector<char> binary_ops { '+', '-', '*', '/', '&', '|' };
-const std::vector<std::string> keywords{"let", "be", "in"};
+const std::vector<std::string> keywords{"let", "be", "in", "if", "then", "else"};
 
 Token::Token(std::string raw_token) {
 	name = find_token_name(raw_token);
