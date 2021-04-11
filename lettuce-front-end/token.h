@@ -10,7 +10,7 @@ enum class TokenName {
 	separator, // '(', ')'
 	identifier,
 	literal,	// integers, 'True', 'False'
-	binaryop,	// +, -, *, /, &, |
+	binaryop,	// +, -, *, /, &, |, ==, !=
 	end			// signal end of program 
 };
 

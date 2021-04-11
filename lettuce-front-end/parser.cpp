@@ -117,7 +117,7 @@ unique_ptr<Expr> Parser::parse_if() {
 unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedence) {
 	Token lookahead = tkz.get_token();
 	while (lookahead.get_token_name() == TokenName::binaryop) {
-		int precedence = binop_precedence.at(lookahead.get_token_text()[0]);
+		int precedence = binop_precedence.at(lookahead.get_token_text());
 		if (precedence >= min_precedence) {
 			Token op = lookahead;
 			tkz.consume_token();
@@ -125,7 +125,7 @@ unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedenc
 
 			lookahead = tkz.get_token();
 			while (lookahead.get_token_name() == TokenName::binaryop) {
-				int next_precedence = binop_precedence.at(lookahead.get_token_text()[0]);
+				int next_precedence = binop_precedence.at(lookahead.get_token_text());
 				if (next_precedence > precedence) {
 					RHS = parse_binary_op(move(RHS), min_precedence + 1);
 					lookahead = tkz.get_token();
@@ -135,7 +135,7 @@ unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedenc
 				}
 			}
 			
-			unique_ptr<BinaryOpExpr> new_LHS(new BinaryOpExpr(op.get_token_text()[0], move(LHS), move(RHS)));
+			unique_ptr<BinaryOpExpr> new_LHS(new BinaryOpExpr(op.get_token_text(), move(LHS), move(RHS)));
 			LHS = move(new_LHS);
 		}
 		else {

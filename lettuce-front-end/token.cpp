@@ -1,7 +1,8 @@
 #include "token.h"
 
-const std::vector<char> binary_ops { '+', '-', '*', '/', '&', '|' };
-const std::vector<std::string> keywords{"let", "be", "in", "if", "then", "else"};
+const std::vector<char> bin_op_characters { '+', '-', '*', '/', '&', '|', '<', '>'};
+const std::vector<std::string>  bin_op_strings {"==", "!=", "<=", ">="};
+const std::vector<std::string> keywords{ "let", "be", "in", "if", "then", "else" };
 
 Token::Token(std::string raw_token) {
 	name = find_token_name(raw_token);
@@ -31,13 +32,20 @@ bool isInteger(std::string s) {
 bool isBinaryOp(std::string s) {
 	if (s.size() == 1) {
 		char c = s[0];
-		int size = binary_ops.size();
+		int size = bin_op_characters.size();
 
-		auto pos = std::find(begin(binary_ops), end(binary_ops), c);
-		if (pos != end(binary_ops)) {
+		auto pos = std::find(begin(bin_op_characters), end(bin_op_characters), c);
+		if (pos != end(bin_op_characters)) {
 			return true;
 		}
 	}
+	else {
+		auto pos = std::find(begin(bin_op_strings), end(bin_op_strings), s);
+		if (pos != end(bin_op_strings)) {
+			return true;
+		}
+	}
+	
 
 	return false;
 }

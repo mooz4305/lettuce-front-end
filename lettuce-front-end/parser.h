@@ -32,7 +32,7 @@ class BoolExpr : public Expr {
 		BoolExpr(bool boolean) : boolean(boolean) {}
 
 		string print() {
-			string text = boolean ? "True" : "FSalse";
+			string text = boolean ? "True" : "False";
 			return "Bool(" + text + ")";
 		};
 };
@@ -50,14 +50,14 @@ class ParensExpr : public Expr {
 
 class BinaryOpExpr : public Expr {
 	private :
-		char op;
+		string op;
 		unique_ptr<Expr> LHExpr, RHExpr;
 	public :
-		BinaryOpExpr(char op, unique_ptr<Expr> LHS, unique_ptr<Expr> RHS) : 
+		BinaryOpExpr(string op, unique_ptr<Expr> LHS, unique_ptr<Expr> RHS) : 
 			op(op), LHExpr(move(LHS)), RHExpr(move(RHS)) {}
 
 		string print() {
-			return string(1,op) + "(" + LHExpr->print() + "," + RHExpr->print() + ")";
+			return op + "(" + LHExpr->print() + "," + RHExpr->print() + ")";
 		};
 };
 
@@ -98,7 +98,7 @@ public:
 class Parser {
 	private :
 		Tokenizer tkz;
-		map<char, int> binop_precedence;
+		map<string, int> binop_precedence;
 		
 	public :
 		unique_ptr<Expr> parse_literal(string);
@@ -115,12 +115,18 @@ class Parser {
 		unique_ptr<Expr> parse_expr();
 
 		Parser(Tokenizer tkz) : tkz(tkz) {
-			binop_precedence['-'] = 0;
-			binop_precedence['+'] = 1;
-			binop_precedence['*'] = 2;
-			binop_precedence['/'] = 3;
-			binop_precedence['|'] = 4;
-			binop_precedence['&'] = 5;
+			binop_precedence["=="] = 0;
+			binop_precedence["!="] = 0;
+			binop_precedence["<="] = 0;
+			binop_precedence[">="] = 0;
+			binop_precedence["<"] = 0;
+			binop_precedence[">"] = 0;
+			binop_precedence["-"] = 4;
+			binop_precedence["+"] = 5;
+			binop_precedence["*"] = 6;
+			binop_precedence["/"] = 7;
+			binop_precedence["|"] = 8;
+			binop_precedence["&"] = 9;
 		};
 		unique_ptr<Expr> parse();
 
