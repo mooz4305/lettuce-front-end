@@ -9,6 +9,7 @@ using namespace std;
 
 class Expr {
 	public:
+		string expr_name = "Expr";
 		virtual ~Expr() = default;
 		virtual string print() { return "Unknown"; };
 };
@@ -64,7 +65,7 @@ class IdentExpr : public Expr {
 	private :
 		string name;
 	public :
-		IdentExpr(string name) : name(name) {}
+		IdentExpr(string name) : name(name) { expr_name = "IdentExpr"; }
 
 		string print() { return "Ident(" + name + ")"; }
 };
@@ -89,6 +90,10 @@ class Parser {
 	public :
 		unique_ptr<Expr> parse_literal(string);
 		unique_ptr<Expr> parse_identifier(string);
+		unique_ptr<Expr> parse_keyword();
+		unique_ptr<Expr> parse_let();
+
+
 		unique_ptr<Expr> parse_parens();
 		unique_ptr<Expr> parse_primary();
 		unique_ptr<Expr> parse_binary_op(unique_ptr<Expr>, int);

@@ -36,6 +36,49 @@ unique_ptr<Expr> Parser::parse_parens() {
 
 }
 
+unique_ptr<Expr> Parser::parse_keyword() {
+	string token_text = tkz.get_token().get_token_text();
+
+	if (token_text == "let") {
+		return parse_let();
+	}
+	else if (token_text == "be" || token_text == "in") {
+		log_error("Let expression could not be parsed.");
+	}
+	else {
+		log_error("Unimplemented keyword token.");
+	}
+}
+
+unique_ptr<Expr> Parser::parse_let() {
+	tkz.consume_token(); // consume the let keyword
+	
+	unique_ptr<Expr> ident_expr = parse_expr();
+	if (ident_expr->expr_name != "IdentExpr") {
+		log_error("Identifier must follow the 'let' keyword.");
+	}
+
+	Token token = tkz.get_token();
+	if (token.get_token_text() != "be") {
+		log_error("Identifier must be followed by the 'be' keyword.");
+	} 
+	tkz.consume_token(); // consume the 'be' keyword
+
+	unique_ptr<Expr> value_expr = parse_expr();
+	if (!value_expr) log_error("Identifier must be set to a value expression.");
+
+	token = tkz.get_token();
+	if (token.get_token_text() != "in") {
+		log_error("Value must be followed by the 'in' keyword.");
+	}
+	tkz.consume_token(); // consume the 'in' keyword
+
+	unique_ptr<Expr> body_expr = parse_expr();
+
+	return unique_ptr<Expr>(new LetExpr(move(ident_expr), move(value_expr), move(body_expr)) );
+}
+
+
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
 unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedence) {
 	Token lookahead = tkz.get_token();
@@ -106,6 +149,8 @@ unique_ptr<Expr> Parser::parse_primary() {
 			else log_error("Missing an opening parentheses.");
 		case TokenName::identifier:
 			return parse_identifier(text);
+		case TokenName::keyword:
+			return parse_keyword();
 		default:
 			log_error("The token '" + text + "' could not be parsed.");
 	}
