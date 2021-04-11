@@ -5,7 +5,7 @@
 #include <vector>
 
 enum class TokenName {
-	// keyword,	// 'let', 'in'
+	keyword,	// 'let', 'in'
 	// unaryop,	// ~
 	separator, // '(', ')'
 	identifier,

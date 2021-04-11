@@ -1,6 +1,7 @@
 #include "token.h"
 
-std::vector<char> binary_ops { '+', '-', '*', '/', '&', '|' };
+const std::vector<char> binary_ops { '+', '-', '*', '/', '&', '|' };
+const std::vector<std::string> keywords{"let", "be", "in"};
 
 Token::Token(std::string raw_token) {
 	name = find_token_name(raw_token);
@@ -41,6 +42,13 @@ bool isBinaryOp(std::string s) {
 	return false;
 }
 
+bool isKeyword(std::string s) {
+	auto pos = std::find(begin(keywords), end(keywords), s);
+	if (pos != end(keywords)) {
+		return true;
+	}
+	else return false;
+}
 
 TokenName Token::find_token_name(std::string raw_token) {
 	if (isInteger(raw_token)) {
@@ -54,6 +62,9 @@ TokenName Token::find_token_name(std::string raw_token) {
 	}
 	else if (raw_token == "(" || raw_token == ")") {
 		return TokenName::separator;
+	}
+	else if (isKeyword(raw_token)) {
+		return TokenName::keyword;
 	}
 	else {
 		return TokenName::identifier;
