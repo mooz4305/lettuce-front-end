@@ -2,7 +2,7 @@
 
 const std::vector<char> bin_op_characters { '+', '-', '*', '/', '&', '|', '<', '>'};
 const std::vector<std::string>  bin_op_strings {"==", "!=", "<=", ">="};
-const std::vector<std::string> keywords{ "let", "be", "in", "if", "then", "else" };
+const std::vector<std::string> keywords{ "let", "be", "in", "if", "then", "else", "function"};
 
 Token::Token(std::string raw_token) {
 	name = find_token_name(raw_token);

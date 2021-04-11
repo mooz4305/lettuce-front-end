@@ -51,7 +51,9 @@ unique_ptr<Expr> Parser::parse_keyword() {
 	else if (token_text == "then" || token_text == "else") {
 		log_error("If-then-else expression could not be parsed.");
 	}
-	else {
+	else if (token_text == "function") {
+		return parse_fundef();
+	} else {
 		log_error("Unimplemented keyword token.");
 	}
 }
@@ -111,6 +113,10 @@ unique_ptr<Expr> Parser::parse_if() {
 	if (!else_expr) log_error("A body expression must follow 'else' keyword.");
 
 	return unique_ptr<Expr>(new ITEExpr(move(conditional_expr), move(then_expr), move(else_expr)));
+}
+
+unique_ptr<Expr> Parser::parse_fundef() {
+	return nullptr;
 }
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser

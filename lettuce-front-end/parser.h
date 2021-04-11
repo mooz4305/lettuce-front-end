@@ -20,6 +20,7 @@ class Parser {
 		unique_ptr<Expr> parse_keyword();
 		unique_ptr<Expr> parse_let();
 		unique_ptr<Expr> parse_if();
+		unique_ptr<Expr> parse_fundef();
 
 		unique_ptr<Expr> parse_parens();
 		unique_ptr<Expr> parse_primary();
