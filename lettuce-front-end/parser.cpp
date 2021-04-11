@@ -116,7 +116,27 @@ unique_ptr<Expr> Parser::parse_if() {
 }
 
 unique_ptr<Expr> Parser::parse_fundef() {
-	return nullptr;
+	tkz.consume_token();
+
+	if (tkz.get_token().get_token_text() != "(") {
+		log_error("Parentheses must follow 'function' keyword.");
+	}
+	tkz.consume_token(); // consume the '(' token
+
+	unique_ptr<Expr> identifier_expr = parse_expr();
+	if (identifier_expr->expr_name != "IdentExpr") {
+		log_error("Argument of function definition must be an identifier.");
+	}
+	if (tkz.get_token().get_token_text() != ")") {
+		log_error("Identifier in function definition is not enclosed by a parentheses.");
+	}
+	tkz.consume_token(); // consume the ')' token
+
+	unique_ptr<Expr> body_expr = parse_expr();
+	if (!body_expr) log_error("Function definition must have a body expression.");
+	
+
+	return unique_ptr<Expr>(new FunDefExpr(move(identifier_expr), move(body_expr)) );
 }
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser

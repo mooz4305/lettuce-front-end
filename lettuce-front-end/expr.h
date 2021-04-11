@@ -88,10 +88,14 @@ public:
 	}
 };
 
-class FunDefExpr : Expr {
+class FunDefExpr : public Expr {
 private:
 	unique_ptr<Expr> ident_expr, body_expr;
 public:
 	FunDefExpr(unique_ptr<Expr> ident_expr, unique_ptr<Expr> body_expr) :
 		ident_expr(move(ident_expr)), body_expr(move(body_expr)) {}
+
+	string print() {
+		return "FunDef(" + ident_expr->print() + "," + body_expr->print() + ")";
+	}
 };
