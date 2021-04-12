@@ -115,6 +115,10 @@ unique_ptr<Expr> Parser::parse_if() {
 	return unique_ptr<Expr>(new ITEExpr(move(conditional_expr), move(then_expr), move(else_expr)));
 }
 
+unique_ptr<Expr> Parser::parse_funcall(unique_ptr<Expr> ident_expr) {
+	return nullptr;
+}
+
 unique_ptr<Expr> Parser::parse_fundef() {
 	tkz.consume_token();
 
@@ -189,6 +193,9 @@ unique_ptr<Expr> Parser::parse_expr() {
 			expr = parse_primary();
 			if (tkz.get_token().get_token_name() == TokenName::binaryop) {
 				expr = parse_binary_op(move(expr), 0);
+			}
+			else if (tkz.get_token().get_token_text() == "(" && expr->expr_name == "IdentExpr") {
+				expr = parse_funcall(move(expr));
 			}
 	}
 	return expr;

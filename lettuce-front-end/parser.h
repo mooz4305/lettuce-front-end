@@ -21,6 +21,8 @@ class Parser {
 		unique_ptr<Expr> parse_let();
 		unique_ptr<Expr> parse_if();
 		unique_ptr<Expr> parse_fundef();
+		unique_ptr<Expr> parse_funcall(unique_ptr<Expr>);
+
 
 		unique_ptr<Expr> parse_parens();
 		unique_ptr<Expr> parse_primary();
