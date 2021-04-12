@@ -99,3 +99,15 @@ public:
 		return "FunDef(" + ident_expr->print() + "," + body_expr->print() + ")";
 	}
 };
+
+class FunCallExpr : public Expr {
+private:
+	unique_ptr<Expr> ident_expr, body_expr;
+public:
+	FunCallExpr(unique_ptr<Expr> ident_expr, unique_ptr<Expr> body_expr) :
+		ident_expr(move(ident_expr)), body_expr(move(body_expr)) {}
+
+	string print() {
+		return "FunCall(" + ident_expr->print() + "," + body_expr->print() + ")";
+	}
+};
