@@ -15,6 +15,8 @@ unique_ptr<Expr> Parser::parse_literal(string text) {
 
 unique_ptr<Expr> Parser::parse_identifier(string text) {
 	tkz.consume_token();
+
+
 	return unique_ptr<Expr>(new IdentExpr(text));
 }
 
@@ -115,12 +117,8 @@ unique_ptr<Expr> Parser::parse_if() {
 	return unique_ptr<Expr>(new ITEExpr(move(conditional_expr), move(then_expr), move(else_expr)));
 }
 
-unique_ptr<Expr> Parser::parse_funcall(unique_ptr<Expr> ident_expr) {
-	return nullptr;
-}
-
 unique_ptr<Expr> Parser::parse_fundef() {
-	tkz.consume_token();
+	tkz.consume_token(); // consume the 'function' keyword
 
 	if (tkz.get_token().get_token_text() != "(") {
 		log_error("Parentheses must follow 'function' keyword.");
@@ -141,6 +139,22 @@ unique_ptr<Expr> Parser::parse_fundef() {
 	
 
 	return unique_ptr<Expr>(new FunDefExpr(move(identifier_expr), move(body_expr)) );
+}
+
+unique_ptr<Expr> Parser::parse_funcall(unique_ptr<Expr> ident_expr) {
+	tkz.consume_token(); // consume the '(' token
+
+	unique_ptr<Expr> arg_expr = parse_expr();
+	if (!arg_expr) {
+		log_error("Argument of function call must have an expression.");
+	}
+
+	if (tkz.get_token().get_token_text() != ")") {
+		log_error("Argument of function call must be enclosed by a parentheses.");
+	}
+	tkz.consume_token(); // consume the ')' token
+
+	return unique_ptr<Expr>(new FunCallExpr(move(ident_expr), move(arg_expr)));
 }
 
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
@@ -194,9 +208,6 @@ unique_ptr<Expr> Parser::parse_expr() {
 			if (tkz.get_token().get_token_name() == TokenName::binaryop) {
 				expr = parse_binary_op(move(expr), 0);
 			}
-			else if (tkz.get_token().get_token_text() == "(" && expr->expr_name == "IdentExpr") {
-				expr = parse_funcall(move(expr));
-			}
 	}
 	return expr;
 }
@@ -207,6 +218,7 @@ unique_ptr<Expr> Parser::parse_primary() {
 	TokenName name = token.get_token_name();
 	string text = token.get_token_text();
 
+
 	switch (name) {
 		case TokenName::literal:
 			return parse_literal(text);
@@ -215,7 +227,13 @@ unique_ptr<Expr> Parser::parse_primary() {
 				return parse_parens();
 			else log_error("Missing an opening parentheses.");
 		case TokenName::identifier:
-			return parse_identifier(text);
+		{
+			unique_ptr<Expr> ident_expr = parse_identifier(text);
+			if (tkz.get_token().get_token_text() == "(") {
+				ident_expr = parse_funcall(move(ident_expr));
+			}
+			return ident_expr;
+		}
 		case TokenName::keyword:
 			return parse_keyword();
 		default:
