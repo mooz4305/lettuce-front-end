@@ -11,7 +11,6 @@ class Token;
 
 class Tokenizer {
 	private:
-		ifstream& ifs;
 		deque<string> tokens;
 
 		void save_token(string);
@@ -20,8 +19,6 @@ class Tokenizer {
 		Token get_token();
 		void consume_token();
 
-		void tokenize();
-
-		Tokenizer(ifstream& ifs) : ifs(ifs) {};
+		void tokenize(istream&);
 		~Tokenizer() {};
 };

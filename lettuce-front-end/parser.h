@@ -45,7 +45,7 @@ class Parser {
 			binop_precedence["|"] = 8;
 			binop_precedence["&"] = 9;
 		};
-		unique_ptr<Expr> parse();
+		unique_ptr<Expr> parse(istream&);
 
 
 };

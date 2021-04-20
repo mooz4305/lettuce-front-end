@@ -190,8 +190,8 @@ unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedenc
 	return LHS;
 }
 
-unique_ptr<Expr> Parser::parse() {
-	tkz.tokenize();
+unique_ptr<Expr> Parser::parse(istream& stream) {
+	tkz.tokenize(stream);
 
 	unique_ptr<Expr> expression = parse_expr(); // assuming program is a single expression
 

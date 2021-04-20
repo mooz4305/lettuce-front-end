@@ -2,36 +2,56 @@
 //
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
-#include "tokenizer.h"
+#include "parser.h"
 
-int main()
+
+int main(int argc, char* argv[])
 {
     string test_program = "test.txt";
     ifstream ifs;
 
-    ifs.open(test_program, ios_base::in);
-    Tokenizer tz(ifs);
+    string file_option = "-f";
+    
+    if (argc == 1) {
+        cout << "Enter an expression to parse, or enter 'q' to quit: " << endl;
 
-    tz.tokenize();
+        Tokenizer tz;
+        Parser parser(tz);
 
-    Token t;
-    do {
-        t = tz.get_token();
-        if (t.get_token_name() == TokenName::binaryop) {
-            cout << t.get_token_text() << endl;
+        string raw_expression;
+        while(getline(cin, raw_expression) && raw_expression != "q") {
+            stringstream stream(raw_expression);
+         
+            unique_ptr<Expr> expr_ast = parser.parse(stream);
+            cout << "Abstract Syntax Tree: " << expr_ast->print() << endl;
         }
-    } while (t.get_token_text() != "");
+    }
+    else if (file_option == argv[1]) {
+
+        if (argc != 3) {
+            cout << "Usage: ./ lfe -f <file_name>" << endl;
+        }
+        else {
+            // call parser on file <file_name>
+            string file_name = argv[2];
+            cout << "Parsing file " << file_name  << "..." << endl;
+
+            ifs.open(file_name, ios_base::in);
+            
+            Tokenizer tz;
+            Parser parser(tz);
+            unique_ptr<Expr> expr_ast = parser.parse(ifs);
+
+            cout << "Abstract Syntax Tree: " << expr_ast->print() << endl;
+        }
+    }
+    else {
+        cout << "Too many arguments. Usage: ./lfe -f <file_name> OR ./lfe <program_text>" << endl;
+    }
+    
+
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
