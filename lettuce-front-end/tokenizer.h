@@ -1,6 +1,5 @@
 #include <string>
-#include <iostream>
-#include <fstream>
+#include <istream>
 #include <deque>
 
 #include "token.h"
@@ -13,10 +12,12 @@ class Tokenizer {
 	private:
 		deque<string> tokens;
 
+		bool is_op_char(char);
+
 		void save_token(string*);
 		void save_token(string);
-		string read_character(char, string);
-		void tokenize_op(char c, string* raw_token, istream& stream);
+
+		void tokenize_op(char, string*, istream&);
 	public:
 		Token get_token();
 		void consume_token();
