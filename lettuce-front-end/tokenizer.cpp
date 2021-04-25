@@ -1,6 +1,6 @@
 #include "tokenizer.h"
 
-bool is_start_binop_char(char c) {
+bool is_op_char(char c) {
 	const std::vector<char> initial_characters{ '+', '-', '*', '/', '&', '|', '=', '!', '<', '>' };
 
 	auto pos = std::find(begin(initial_characters), end(initial_characters), c);
@@ -30,8 +30,31 @@ void Tokenizer::consume_token() {
 	}
 }
 
+// adds token from address to queue and clears the string
+void Tokenizer::save_token(string* raw_token) {
+	string saved_token = *raw_token;
+	if (saved_token != "")
+		tokens.push_back(saved_token);
+	*raw_token = "";
+}
+
 void Tokenizer::save_token(string raw_token) {
 	tokens.push_back(raw_token);
+}
+
+void Tokenizer::tokenize_op(char c, string* raw_token, istream& stream) {
+	save_token(raw_token);
+	*raw_token += c;
+	while (stream.get(c)) {
+		if (is_op_char(c)) {
+			*raw_token += c;
+		}
+		else {
+			save_token(raw_token);
+			*raw_token += c;
+			break;
+		}
+	}
 }
 
 void Tokenizer::tokenize(istream& ifs)
@@ -39,9 +62,22 @@ void Tokenizer::tokenize(istream& ifs)
 	char c;
 	string raw_token = "";
 	while (ifs.get(c)) {
-		raw_token = Tokenizer::read_character(c, raw_token);
+		if (isspace(c)) {
+			save_token(&raw_token);
+		}
+		else if (c == '(' || c == ')') {
+			save_token(&raw_token); 
+			save_token(string(1, c));
+		}
+		else if (is_op_char(c)) {
+			tokenize_op(c, &raw_token, ifs);
+		}
+		else {
+			raw_token += c;
+		}
 	}
-	Tokenizer::read_character(' ', raw_token);
+
+	save_token(&raw_token);
 }
 
 /*	get_token :
@@ -87,6 +123,7 @@ Token Tokenizer::return_token() {
 
 */
 
+/*
 string Tokenizer::read_character(char c, const string raw_token) {
 	if (isspace(c)) {	// whitespace separates tokens, thrown away
 		if (raw_token != "") {
@@ -94,7 +131,7 @@ string Tokenizer::read_character(char c, const string raw_token) {
 		}
 		return "";
 	}
-	else if (c == '(' || c == ')' || isBinaryOp(string(1,c))) { // parentheses seperate tokens, but are also tokens
+	else if (c == '(' || c == ')') { // parentheses seperate tokens, but are also tokens
 		if (raw_token != "") {
 			save_token(raw_token);
 		}
@@ -104,8 +141,30 @@ string Tokenizer::read_character(char c, const string raw_token) {
 
 		return "";
 	}
+	else if (isBinaryOp(string(1, c)) ) {
+		//
+	}
 	else {
 		string updated_token = raw_token + c;
 		return updated_token;
 	}
 }
+
+*/
+
+// get character from stream
+// if char is delimiter
+	// if char is unsaved delimiter
+		// skip character
+		// continue processsing stream
+	// if char is saved delimiter
+		// save the current token
+		// save char as token
+		// continue processsing stream
+	// if char is part of operations (unary, binary, etc)
+		// save the current token
+		// process stream for an operation token.
+		// continue processsing stream
+// else 
+	// append char to current_token 
+	// continue processing stream.
