@@ -1,5 +1,6 @@
 #include <string>
 #include <istream>
+#include <sstream>
 #include <deque>
 
 #include "token.h"
@@ -23,5 +24,7 @@ class Tokenizer {
 		void consume_token();
 
 		void tokenize(istream&);
+		void tokenize(string);
+
 		~Tokenizer() {};
 };

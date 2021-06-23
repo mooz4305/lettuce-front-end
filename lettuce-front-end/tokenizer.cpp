@@ -68,7 +68,7 @@ void Tokenizer::tokenize(istream& stream)
 			save_token(string(1, c));
 		}
 		else if (is_op_char(c)) {
-			save_token(raw_token);
+			save_token(&raw_token);
 			tokenize_op(c, &raw_token, stream);
 		}
 		else {
@@ -77,4 +77,10 @@ void Tokenizer::tokenize(istream& stream)
 	}
 
 	save_token(&raw_token); // save token once stream ends
+}
+
+
+void Tokenizer::tokenize(string raw_expression) {
+	stringstream stream(raw_expression);
+	tokenize(stream);
 }
