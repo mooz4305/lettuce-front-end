@@ -26,5 +26,7 @@ class Tokenizer {
 		void tokenize(istream&);
 		void tokenize(string);
 
+		void reset() { tokens.clear(); }
+
 		~Tokenizer() {};
 };

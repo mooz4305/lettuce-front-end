@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>  // needed for unique pointer
 #include <map>
+#include <iostream>
 
 #include "tokenizer.h"
 #include "expr.h"
@@ -45,7 +46,12 @@ class Parser {
 			binop_precedence["|"] = 8;
 			binop_precedence["&"] = 9;
 		};
-		unique_ptr<Expr> parse(istream&);
 
+		unique_ptr<Expr> parse(istream&);
+		unique_ptr<Expr> parse(string);
+
+		void reset() {
+			tkz.reset();
+		};
 
 };

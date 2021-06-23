@@ -198,6 +198,14 @@ unique_ptr<Expr> Parser::parse(istream& stream) {
 	return expression;
 }
 
+unique_ptr<Expr> Parser::parse(string raw_expression) {
+	tkz.tokenize(raw_expression);
+
+	unique_ptr<Expr> expression = parse_expr(); // assuming program is a single expression
+
+	return expression;
+}
+
 unique_ptr<Expr> Parser::parse_expr() {
 	unique_ptr<Expr> expr;
 

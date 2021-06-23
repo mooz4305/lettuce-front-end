@@ -4,7 +4,7 @@ class Expr {
 public:
 	string expr_name = "Expr";
 	virtual ~Expr() = default;
-	virtual string print() { return "Unknown"; };
+	virtual string print() { return "Unknown Expression"; };
 };
 
 class ConstExpr : public Expr {

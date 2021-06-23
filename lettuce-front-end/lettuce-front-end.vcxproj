@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lfe.cpp" />
+    <ClCompile Include="parser.cpp" />
     <ClCompile Include="tokenizer.cpp" />
     <ClCompile Include="token.cpp" />
   </ItemGroup>
@@ -147,6 +148,7 @@
     <Text Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="expr.h" />
     <ClInclude Include="parser.h" />
     <ClInclude Include="token.h" />
     <ClInclude Include="tokenizer.h" />

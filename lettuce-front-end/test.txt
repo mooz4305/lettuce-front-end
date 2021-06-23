@@ -1,1 +1,3 @@
-10+3-(2+5)
+let f be function(x) x + 3
+	in
+		f(2) + 3
