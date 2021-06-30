@@ -20,8 +20,8 @@ The program converts raw text into a Lettuce expression (stored/represented as a
 ### Things Learned
 - how to make a front-end for a language, using C++,
   - tokenizing raw text into literals, keywords, and other syntactic elements of the language,
-  - parsing tokens into expressions, reprsented by an abstract syntax tree (AST),
-- applying the `unique_ptr<>` type (and the `memory` library) for memory management of the AST,
+  - parsing tokens into expressions, represented by an abstract syntax tree (AST),
+- applying the `unique_ptr<>` type (from the `memory` library) for memory management of the AST,
 - utilizing Visual Studio for C++ development.
 
 ### Possible Directions
