@@ -25,12 +25,5 @@ The program converts raw text into a Lettuce expression (stored/represented as a
 - utilizing Visual Studio for C++ development.
 
 ### Possible Directions
-- improve language features:
-  - add unary operators,
-  - add a recursive function keyword and expression,
-  - add types,
-  - add mutable variables,
-- improve front-end features:
-  - throw and catch parsing errors instead of exiting program, 
-  - implement type checker,
-- build a back-end using LLVM Core libraries, so Lettuce can be compiled to machine-code.
+- build in-browser interpreter for Lettuce programs, converting existing code to WASM using Emscripten, 
+- build a back-end using LLVM Core libraries, so Lettuce programs can be compiled to machine-code.
