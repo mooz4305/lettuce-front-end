@@ -1,13 +1,17 @@
-#include <vector>
 #include <string>
-#include <memory>  // needed for unique pointer
+#include <memory> 
 #include <map>
-#include <iostream>
 
 #include "tokenizer.h"
 #include "expr.h"
 
 using namespace std;
+
+class parse_error : public runtime_error {
+public:
+	explicit parse_error(const string& what_arg) : runtime_error(what_arg) {};
+	explicit parse_error(const char* what_arg) : runtime_error(what_arg) {};
+};
 
 
 class Parser {
@@ -16,9 +20,9 @@ class Parser {
 		map<string, int> binop_precedence;
 		
 	public :
-		unique_ptr<Expr> parse_literal(string);
-		unique_ptr<Expr> parse_identifier(string);
-		unique_ptr<Expr> parse_keyword();
+		unique_ptr<Expr> parse_literal(Token);
+		unique_ptr<Expr> parse_identifier(Token);
+		unique_ptr<Expr> parse_keyword(Token);
 		unique_ptr<Expr> parse_let();
 		unique_ptr<Expr> parse_if();
 		unique_ptr<Expr> parse_fundef();
@@ -51,4 +55,5 @@ class Parser {
 			tkz.reset();
 		};
 
+		void log_error(string);
 };

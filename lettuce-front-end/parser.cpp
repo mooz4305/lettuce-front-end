@@ -1,30 +1,41 @@
 #include "parser.h"
 
-void log_error(string message) {
-	cout << "ParseError: " << message << endl;
-	exit(EXIT_FAILURE);
+void Parser::log_error(string message) {
+	string error_message = "ParseError: " + message;
+	throw parse_error(error_message);
 }
 
-unique_ptr<Expr> Parser::parse_literal(string text) {
+unique_ptr<Expr> Parser::parse_literal(Token token) {
 	tkz.consume_token(); // consume the literal token
 
-	if (text[0] == 'T')			return unique_ptr<Expr>(new BoolExpr(true));
-	else if (text[0] == 'F')	return unique_ptr<Expr>(new BoolExpr(false));
-	else						return unique_ptr<Expr>(new ConstExpr(stoi(text)));
+	string token_text = token.get_text();
+	if (token_text[0] == 'T')			return unique_ptr<Expr>(new BoolExpr(true));
+	else if (token_text[0] == 'F')		return unique_ptr<Expr>(new BoolExpr(false));
+	else								return unique_ptr<Expr>(new ConstExpr(stoi(token_text)));
 }
 
-unique_ptr<Expr> Parser::parse_identifier(string text) {
+unique_ptr<Expr> Parser::parse_identifier(Token token) {
 	tkz.consume_token();
+	unique_ptr<Expr> ident_expr = unique_ptr<Expr>(new IdentExpr(token.get_text()));
 
-	return unique_ptr<Expr>(new IdentExpr(text));
+	// check whether identifier is part of a function call
+	if (tkz.get_token().get_text() == "(") {
+		unique_ptr<Expr> func_call_expr = parse_funcall(move(ident_expr));
+		return func_call_expr;
+	}
+	else {
+		return ident_expr;
+	}
 }
 
 
 unique_ptr<Expr> Parser::parse_parens() {
+	if (tkz.get_token().get_text() != "(") log_error("Missing an opening parentheses.");
+
 	tkz.consume_token(); // consume the '(' token
 
 	unique_ptr<Expr> center_expr = parse_expr();
-	if (!center_expr) log_error("Parentheses must enclose an expression.");
+	if (!center_expr) log_error("Parentheses must enclose some expression.");
 
 	Token lookahead = tkz.get_token();
 	if (lookahead.get_text() == ")") {
@@ -33,30 +44,34 @@ unique_ptr<Expr> Parser::parse_parens() {
 		unique_ptr<Expr> result(new ParensExpr(move(center_expr)));
 		return result;
 	}
-	else log_error("Missing a closing parentheses.");
-
+	else {
+		log_error("Missing a closing parentheses.");
+		return nullptr;
+	}
 }
 
-unique_ptr<Expr> Parser::parse_keyword() {
-	string token_text = tkz.get_token().get_text();
+unique_ptr<Expr> Parser::parse_keyword(Token token) {
+	string token_text = token.get_text();
 
 	if (token_text == "let") {
 		return parse_let();
 	}
 	else if (token_text == "be" || token_text == "in") {
-		log_error("Let expression could not be parsed.");
-	} 
+		log_error("'" + token_text + "' was not identified as part of a 'let' expression.");
+	}
 	else if (token_text == "if") {
 		return parse_if();
 	}
 	else if (token_text == "then" || token_text == "else") {
-		log_error("If-then-else expression could not be parsed.");
+		log_error("'" + token_text + "' was not identified as part of an 'if-then-else' expression.");
 	}
 	else if (token_text == "function") {
 		return parse_fundef();
 	} else {
-		log_error("Unimplemented keyword token.");
+		throw invalid_argument("Invalid argument: token string cannot be parsed as keyword.");
 	}
+
+	return nullptr;
 }
 
 unique_ptr<Expr> Parser::parse_let() {
@@ -200,8 +215,15 @@ unique_ptr<Expr> Parser::parse(istream& stream) {
 unique_ptr<Expr> Parser::parse(string raw_expression) {
 	tkz.tokenize(raw_expression);
 
-	unique_ptr<Expr> expression = parse_expr(); // assuming program is a single expression
+	unique_ptr<Expr> expression;
+	// program is a single expression
+	expression = parse_expr();
 
+	// check whether program is completely parsed
+	if (tkz.get_token().get_name() != TokenName::end) {
+		parse_expr(); // continue parsing to identify error
+	}
+		
 	return expression;
 }
 
@@ -227,22 +249,15 @@ unique_ptr<Expr> Parser::parse_primary() {
 
 	switch (name) {
 		case TokenName::literal:
-			return parse_literal(text);
+			return parse_literal(token);
 		case TokenName::separator:
-			if (text == "(")
-				return parse_parens();
-			else log_error("Missing an opening parentheses.");
+			return parse_parens();
 		case TokenName::identifier:
-		{
-			unique_ptr<Expr> ident_expr = parse_identifier(text);
-			if (tkz.get_token().get_text() == "(") {
-				ident_expr = parse_funcall(move(ident_expr));
-			}
-			return ident_expr;
-		}
+			return parse_identifier(token);
 		case TokenName::keyword:
-			return parse_keyword();
+			return parse_keyword(token);
 		default:
 			log_error("The token '" + text + "' could not be parsed.");
+			return nullptr;
 	}
 }

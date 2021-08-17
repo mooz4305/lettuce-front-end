@@ -14,11 +14,11 @@ Token::Token(TokenName token_name, std::string raw_token) {
 	text = raw_token;
 }
 
-TokenName Token::get_token_name() {
+TokenName Token::get_name() {
 	return name;
 }
 
-std::string Token::get_token_text() {
+std::string Token::get_text() {
 	return text;
 }
 
