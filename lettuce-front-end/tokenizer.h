@@ -14,14 +14,12 @@ class TokenList;
 class Tokenizer {
 private:
 	TokenList tokens;
-	bool is_tokenizing;
 
 	bool is_op_char(char);
 
-	void save_token(string*);
-	void save_token(string);
+	void save_token(const string);
 
-	void tokenize_op(char, string*, istream&);
+	void tokenize_op(char, istream&);
 public:
 	Token get_token();
 	void consume_token();
@@ -30,7 +28,4 @@ public:
 	void tokenize(string);
 
 	void reset() { tokens.clear_tokens(); }
-
-	Tokenizer() : is_tokenizing(true) {};
-	~Tokenizer() {};
 };
