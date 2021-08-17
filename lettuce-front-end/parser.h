@@ -23,13 +23,10 @@ class Parser {
 		unique_ptr<Expr> parse_if();
 		unique_ptr<Expr> parse_fundef();
 		unique_ptr<Expr> parse_funcall(unique_ptr<Expr>);
-
-
 		unique_ptr<Expr> parse_parens();
 		unique_ptr<Expr> parse_primary();
 		unique_ptr<Expr> parse_binary_op(unique_ptr<Expr>, int);
 		
-
 		unique_ptr<Expr> parse_expr();
 
 		Parser(Tokenizer tkz) : tkz(tkz) {

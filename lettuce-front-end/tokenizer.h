@@ -4,29 +4,33 @@
 #include <deque>
 
 #include "token.h"
+#include "tokenlist.h"
 
 using namespace std;
 
 class Token;
+class TokenList;
 
 class Tokenizer {
-	private:
-		deque<string> tokens;
+private:
+	TokenList tokens;
+	bool is_tokenizing;
 
-		bool is_op_char(char);
+	bool is_op_char(char);
 
-		void save_token(string*);
-		void save_token(string);
+	void save_token(string*);
+	void save_token(string);
 
-		void tokenize_op(char, string*, istream&);
-	public:
-		Token get_token();
-		void consume_token();
+	void tokenize_op(char, string*, istream&);
+public:
+	Token get_token();
+	void consume_token();
 
-		void tokenize(istream&);
-		void tokenize(string);
+	void tokenize(istream&);
+	void tokenize(string);
 
-		void reset() { tokens.clear(); }
+	void reset() { tokens.clear_tokens(); }
 
-		~Tokenizer() {};
+	Tokenizer() : is_tokenizing(true) {};
+	~Tokenizer() {};
 };

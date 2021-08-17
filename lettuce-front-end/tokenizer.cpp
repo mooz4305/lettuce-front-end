@@ -11,13 +11,16 @@ bool Tokenizer::is_op_char(char c) {
 }
 
 void Tokenizer::save_token(string raw_token) {
-	tokens.push_back(raw_token);
+	Token saved_token = Token(raw_token);
+	tokens.add_token(saved_token);
 }
 
 void Tokenizer::save_token(string* raw_token) {
-	string saved_token = *raw_token;
-	if (saved_token != "")
-		tokens.push_back(saved_token);
+	string token_string = *raw_token;
+
+	Token saved_token = Token(token_string);
+	tokens.add_token(saved_token);
+
 	*raw_token = "";
 }
 
@@ -36,23 +39,11 @@ void Tokenizer::tokenize_op(char c, string* raw_token, istream& stream) {
 }
 
 Token Tokenizer::get_token() {
-	Token t;
-
-	if (!tokens.empty()) {
-		string raw_token = tokens.front();
-		t = Token(raw_token);
-	}
-	else {
-		t = Token(TokenName::end, "");
-	}
-
-	return t;
+	return tokens.get_token();
 }
 
 void Tokenizer::consume_token() {
-	if (!tokens.empty()) {
-		tokens.pop_front();
-	}
+	tokens.consume_token();
 }
 
 void Tokenizer::tokenize(istream& stream)

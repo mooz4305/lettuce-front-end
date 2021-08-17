@@ -29,8 +29,8 @@ public:
 	Token(std::string);
 	Token(TokenName, std::string);
 	
-	TokenName get_token_name();
-	std::string get_token_text();
+	TokenName get_name();
+	std::string get_text();
 };
 
 #endif

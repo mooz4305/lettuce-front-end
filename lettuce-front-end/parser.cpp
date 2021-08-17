@@ -16,7 +16,6 @@ unique_ptr<Expr> Parser::parse_literal(string text) {
 unique_ptr<Expr> Parser::parse_identifier(string text) {
 	tkz.consume_token();
 
-
 	return unique_ptr<Expr>(new IdentExpr(text));
 }
 
@@ -28,7 +27,7 @@ unique_ptr<Expr> Parser::parse_parens() {
 	if (!center_expr) log_error("Parentheses must enclose an expression.");
 
 	Token lookahead = tkz.get_token();
-	if (lookahead.get_token_text() == ")") {
+	if (lookahead.get_text() == ")") {
 		tkz.consume_token(); // consume the ')' token
 
 		unique_ptr<Expr> result(new ParensExpr(move(center_expr)));
@@ -39,7 +38,7 @@ unique_ptr<Expr> Parser::parse_parens() {
 }
 
 unique_ptr<Expr> Parser::parse_keyword() {
-	string token_text = tkz.get_token().get_token_text();
+	string token_text = tkz.get_token().get_text();
 
 	if (token_text == "let") {
 		return parse_let();
@@ -69,7 +68,7 @@ unique_ptr<Expr> Parser::parse_let() {
 	}
 
 	Token token = tkz.get_token();
-	if (token.get_token_text() != "be") {
+	if (token.get_text() != "be") {
 		log_error("Identifier must be followed by the 'be' keyword.");
 	} 
 	tkz.consume_token(); // consume the 'be' keyword
@@ -78,7 +77,7 @@ unique_ptr<Expr> Parser::parse_let() {
 	if (!value_expr) log_error("Identifier must be set to a value expression.");
 
 	token = tkz.get_token();
-	if (token.get_token_text() != "in") {
+	if (token.get_text() != "in") {
 		log_error("Value must be followed by the 'in' keyword.");
 	}
 	tkz.consume_token(); // consume the 'in' keyword
@@ -97,7 +96,7 @@ unique_ptr<Expr> Parser::parse_if() {
 	unique_ptr<Expr> conditional_expr = parse_expr();
 
 	Token token = tkz.get_token();
-	if (token.get_token_text() != "then") {
+	if (token.get_text() != "then") {
 		log_error("Conditional must be followed by 'then' keyword.");
 	}
 	tkz.consume_token(); // consume the 'then' keyword
@@ -106,7 +105,7 @@ unique_ptr<Expr> Parser::parse_if() {
 	if (!then_expr) log_error("A body expression must follow 'then' keyword.");
 
 	token = tkz.get_token();
-	if (token.get_token_text() != "else") {
+	if (token.get_text() != "else") {
 		log_error("Missing 'else' keyword.");
 	}
 	tkz.consume_token(); // consume the 'else' keyword
@@ -120,7 +119,7 @@ unique_ptr<Expr> Parser::parse_if() {
 unique_ptr<Expr> Parser::parse_fundef() {
 	tkz.consume_token(); // consume the 'function' keyword
 
-	if (tkz.get_token().get_token_text() != "(") {
+	if (tkz.get_token().get_text() != "(") {
 		log_error("Parentheses must follow 'function' keyword.");
 	}
 	tkz.consume_token(); // consume the '(' token
@@ -129,7 +128,7 @@ unique_ptr<Expr> Parser::parse_fundef() {
 	if (identifier_expr->expr_name != "IdentExpr") {
 		log_error("Argument of function definition must be an identifier.");
 	}
-	if (tkz.get_token().get_token_text() != ")") {
+	if (tkz.get_token().get_text() != ")") {
 		log_error("Identifier in function definition is not enclosed by a parentheses.");
 	}
 	tkz.consume_token(); // consume the ')' token
@@ -149,7 +148,7 @@ unique_ptr<Expr> Parser::parse_funcall(unique_ptr<Expr> ident_expr) {
 		log_error("Argument of function call must have an expression.");
 	}
 
-	if (tkz.get_token().get_token_text() != ")") {
+	if (tkz.get_token().get_text() != ")") {
 		log_error("Argument of function call must be enclosed by a parentheses.");
 	}
 	tkz.consume_token(); // consume the ')' token
@@ -160,16 +159,16 @@ unique_ptr<Expr> Parser::parse_funcall(unique_ptr<Expr> ident_expr) {
 // Using precedence climbing method, see https://en.wikipedia.org/wiki/Operator-precedence_parser
 unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedence) {
 	Token lookahead = tkz.get_token();
-	while (lookahead.get_token_name() == TokenName::binaryop) {
-		int precedence = binop_precedence.at(lookahead.get_token_text());
+	while (lookahead.get_name() == TokenName::binaryop) {
+		int precedence = binop_precedence.at(lookahead.get_text());
 		if (precedence >= min_precedence) {
 			Token op = lookahead;
 			tkz.consume_token();
 			unique_ptr<Expr> RHS = parse_primary();
 
 			lookahead = tkz.get_token();
-			while (lookahead.get_token_name() == TokenName::binaryop) {
-				int next_precedence = binop_precedence.at(lookahead.get_token_text());
+			while (lookahead.get_name() == TokenName::binaryop) {
+				int next_precedence = binop_precedence.at(lookahead.get_text());
 				if (next_precedence > precedence) {
 					RHS = parse_binary_op(move(RHS), min_precedence + 1);
 					lookahead = tkz.get_token();
@@ -179,7 +178,7 @@ unique_ptr<Expr> Parser::parse_binary_op(unique_ptr<Expr> LHS, int min_precedenc
 				}
 			}
 			
-			unique_ptr<BinaryOpExpr> new_LHS(new BinaryOpExpr(op.get_token_text(), move(LHS), move(RHS)));
+			unique_ptr<BinaryOpExpr> new_LHS(new BinaryOpExpr(op.get_text(), move(LHS), move(RHS)));
 			LHS = move(new_LHS);
 		}
 		else {
@@ -210,10 +209,10 @@ unique_ptr<Expr> Parser::parse_expr() {
 	unique_ptr<Expr> expr;
 
 	Token token = tkz.get_token();
-	TokenName name = token.get_token_name();
+	TokenName name = token.get_name();
 	if (name != TokenName::end) {
 			expr = parse_primary();
-			if (tkz.get_token().get_token_name() == TokenName::binaryop) {
+			if (tkz.get_token().get_name() == TokenName::binaryop) {
 				expr = parse_binary_op(move(expr), 0);
 			}
 	}
@@ -223,9 +222,8 @@ unique_ptr<Expr> Parser::parse_expr() {
 // parses expressions that are not BinOp expressions
 unique_ptr<Expr> Parser::parse_primary() {
 	Token token = tkz.get_token();
-	TokenName name = token.get_token_name();
-	string text = token.get_token_text();
-
+	TokenName name = token.get_name();
+	string text = token.get_text();
 
 	switch (name) {
 		case TokenName::literal:
@@ -237,7 +235,7 @@ unique_ptr<Expr> Parser::parse_primary() {
 		case TokenName::identifier:
 		{
 			unique_ptr<Expr> ident_expr = parse_identifier(text);
-			if (tkz.get_token().get_token_text() == "(") {
+			if (tkz.get_token().get_text() == "(") {
 				ident_expr = parse_funcall(move(ident_expr));
 			}
 			return ident_expr;
